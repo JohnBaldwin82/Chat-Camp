@@ -1,4 +1,6 @@
-import { config } from "dotenv";
+
+
+git commitimport { config } from "dotenv";
 config();
 
 import { Configuration, OpenAIApi } from "openai";
