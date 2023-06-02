@@ -1,9 +1,8 @@
 const router = require('express').Router()
-const postRoutes = require('./postRoutes.js')
-const aiRoutes = require('./aiRoutes.js')
+const projectRoutes = require('./projectRoutes.js')
 
-router.use('/projects', postRoutes)
-router.use('/chatGpt', aiRoutes)
+router.use('/projects', projectRoutes)
+
 
 
 module.exports = router
