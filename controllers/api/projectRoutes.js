@@ -1,36 +1,37 @@
-const router = require('express').Router()
-
-const { config } = require("dotenv");
-config();
-
-const { Configuration, OpenAIApi } = require("openai");
-const readline = require("readline")
+const router = require('express').Router();
+const { Project } = require('../../models');
 
 router.post('/', async (req, res) => {
-    const openai = new OpenAIApi(
-        new Configuration({
-          apiKey: process.env.API_KEY
-        })
-      );
-      
-      const userInterface = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout
-      })
-      
-      userInterface.prompt()
-      userInterface.on("line", async input =>{
-      const res = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: input }],
-      })
-       
-          userInterface.prompt()
-        })
-    res.status(200).json({
-        message: res.data.choices[0].message.content
-    })
-})
+  try {
+    const newProject = await Project.create({
+      ...req.body,
+      user_id: req.session.user_id,
+    });
 
+    res.status(200).json(newProject);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
-module.exports = router
+router.delete('/:id', async (req, res) => {
+  try {
+    const projectData = await Project.destroy({
+      where: {
+        id: req.params.id,
+        user_id: req.session.user_id,
+      },
+    });
+
+    if (!projectData) {
+      res.status(404).json({ message: 'No project found with this id!' });
+      return;
+    }
+
+    res.status(200).json(projectData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+module.exports = router;
