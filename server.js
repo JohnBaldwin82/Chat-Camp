@@ -59,6 +59,14 @@ io.on('connection', (socket) => {
     });
 });
 
+app.get('/', (req, res) => {
+    res.render('homepage', { }); // Pass any data you want to the template
+  });
+
+  app.get('/profile', (req, res) => {
+    res.render('profile', { }); // Pass any data you want to the template
+  });
+
 sequelize.sync({ force: false }).then(() => {
     server.listen(PORT, () => console.log(`Now listening on ${PORT}`));
 });
