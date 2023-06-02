@@ -1,6 +1,8 @@
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const http = require('http');
+const socketIo = require('socket.io')
 const routes = require('./controllers');
 const helpers = require('./utils/helpers');
 const exphbs = require('express-handlebars');
@@ -40,6 +42,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(routes);
 
-sequelize.sync({ force: false }).then(() => {
-    app.listen(PORT, () => console.log('Now listening'));
+
+const server = http.createServer(app);
+const io = socketIo(server);
+
+io.on('connection', (socket) => {
+    console.log('A user has connected');
+
+    socket.on('chat message', (message) => {
+        console.log('Received message:', message);
+        io.emit('chat message', message);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('You have been disconnected');
+    });
 });
+
+sequelize.sync({ force: false }).then(() => {
+    server.listen(PORT, () => console.log(`Now listening on ${PORT}`));
+});
+
