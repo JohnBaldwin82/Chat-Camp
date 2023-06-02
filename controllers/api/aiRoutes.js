@@ -6,29 +6,21 @@ config();
 const { Configuration, OpenAIApi } = require("openai");
 const readline = require("readline")
 
-router.post('/', async (req, res) => {
+router.post('', async (req, res) => {
+    console.log(req.body.message);
     const openai = new OpenAIApi(
         new Configuration({
           apiKey: process.env.API_KEY
         })
       );
       
-      const userInterface = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout
-      })
-      
-      userInterface.prompt()
-      userInterface.on("line", async input =>{
-      const res = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: input }],
-      })
-       
-          userInterface.prompt()
-        })
+      const completion = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: req.body.message,
+      });
+
     res.status(200).json({
-        message: res.data.choices[0].message.content
+        message: completion.data.choices[0].text
     })
 })
 
