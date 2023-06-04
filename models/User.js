@@ -17,11 +17,11 @@ User.init(
             autoIncrement: true,
         },
         name: {
-            type: DataTypes.String,
+            type: DataTypes.STRING,
             allowNull: false,
         },
         email: {
-            type: Datatypes.STRING,
+            type: DataTypes.STRING,
             allowNull: false, 
             unique: true,
             validate: {
