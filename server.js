@@ -1,21 +1,42 @@
-const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io')
 const routes = require('./controllers');
 const helpers = require('./utils/helpers');
 const exphbs = require('express-handlebars');
+const app = express();
+
+//skt added hdb.js in controllers
+const handlejs = require('./controllers/controlhbs');
 
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-const app = express();
 const PORT = process.env.PORT || 3001;
 
-const hbs = exphbs.create({ helpers });
+//skt added path to join hbs files and add helpers object
+const hbs = exphbs.create({
 
-const sess = {
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views/layouts'),
+    partialsDir: path.join(__dirname, 'views'),
+    
+    
+    helpers: {
+       userName: function(value){
+    return value;
+
+       }
+    }
+ });
+
+ hbs.registerPartials(__dirname + '/views/partials/');
+
+ app.engine('handlebars', hbs.engine);
+
+ const sess = {
     secret: 'Super secret secret',
     cookie: {
         maxAge: 300000,
@@ -30,17 +51,16 @@ const sess = {
     })
 };
 
-app.use(session(sess));
 
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
+app.set('view engine', hbs.engine);
+app.use(session(sess));
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 //express.urlencoded() function parses requests and returns an object
 // can also use inflate, limit, verify 
 app.use(express.urlencoded({ extended: true }));
-app.use(routes);
+app.use('routes', routes);
 
 
 const server = http.createServer(app);
@@ -59,13 +79,6 @@ io.on('connection', (socket) => {
     });
 });
 
-app.get('/', (req, res) => {
-    res.render('homepage', { }); // Pass any data you want to the template
-  });
-
-  app.get('/profile', (req, res) => {
-    res.render('profile', { }); // Pass any data you want to the template
-  });
 
 sequelize.sync({ force: false }).then(() => {
     server.listen(PORT, () => console.log(`Now listening on ${PORT}`));

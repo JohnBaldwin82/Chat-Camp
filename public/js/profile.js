@@ -1,3 +1,5 @@
+
+
 function chatGptPost(){
     var ourMessageDiv = document.createElement('div');
     ourMessageDiv.innerHTML = document.getElementById('chatGptEntry').value;
