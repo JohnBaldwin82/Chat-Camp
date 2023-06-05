@@ -32,7 +32,7 @@ const hbs = exphbs.create({
     }
  });
 
- hbs.registerPartials(__dirname + '/views/partials/');
+//  hbs.registerPartials(__dirname + '/views/partials/');
 
  app.engine('handlebars', hbs.engine);
 
