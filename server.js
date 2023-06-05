@@ -23,6 +23,7 @@ const hbs = exphbs.create({
     layoutsDir: path.join(__dirname, 'views/layouts'),
     partialsDir: path.join(__dirname, 'views'),
     
+    
     helpers: {
        userName: function(value){
     return value;
