@@ -92,6 +92,7 @@ router.get('/profile', withAuth, async (req, res) => {
 });
 
 router.get('/login', (req, res) => {
+    console.log('connecting')
     if (req.session.loggedIn) {
         res.redirect('/');
         return;
