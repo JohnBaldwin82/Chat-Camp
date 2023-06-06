@@ -5,7 +5,6 @@ const formHandlerLogin = async (e) => {
   const password = document.getElementById("loginPwd").value.trim();
   const email = document.getElementById("loginEmailId").value.trim();
   // const personName = document.getElementById('personName').value.trim();
-  console.log("is it working?");
   if (email && password) {
     const response = await fetch("/api/user/login", {
       method: "POST",
@@ -30,7 +29,7 @@ const formHandlersignup = async (e) => {
     console.log(email,password,userName)
     const response = await fetch("/api/user", {
       method: "POST",
-      body: JSON.stringify({ email, password, userName }),
+      body: JSON.stringify({ email: email, password: password, userName: userName }),
       headers: { "Content-Type": "application/json" },
     });
     if (response.ok) {
