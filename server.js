@@ -68,6 +68,7 @@ const io = socketIo(server);
 
 io.on('connection', (socket) => {
     console.log('A user has connected');
+    // console.log(socket);
 
     socket.on('chat message', (message) => {
         console.log('Received message:', message);

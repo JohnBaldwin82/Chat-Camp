@@ -7,13 +7,13 @@
           <a href="#" class="card-link">Create a new</a> -->
     </div>
   </div>
-  <select class="form-select" aria-label="Default select example" style="background-color: #eee;">
+  <select id="roomSelect" class="form-select" aria-label="Default select example" style="background-color: #eee;" onchange="roomChange()">
     <option selected>Select A Room</option>
-    <option value="1">CHAT GTP</option>
-    <option value="2">HTML/CSS</option>
-    <option value="3">JAVASCRIPT</option>
+    <option value="chatGpt">CHAT GTP</option>
+    <option value="html">HTML/CSS</option>
+    <option value="javascript">JAVASCRIPT</option>
   </select>
-<section style="background-color: #eee;">
+<section id="javascript" style="background-color: #eee; display:none;">
   <div class="container py-5">
     <div class="row d-flex justify-content-center">
       <div class="col-md-8 col-lg-6 col-xl-4">
@@ -24,7 +24,7 @@
             <i class="fas fa-times"></i>
           </div>
           <div class="card-body chat-container">
-            <ul class="chat-messages" id="chat-messages">
+            <ul class="chat-messages" id="javascript-chat-messages">
               {{#each messages}}
               <li class="message">
                 <div class="d-flex flex-row justify-content-start mb-4">
@@ -36,9 +36,9 @@
               </li>
               {{/each}}
             </ul>
-            <form class="chat-form" id="chat-form">
+            <form class="chat-form" id="javascript-chat-form">
               <div class="form-outline">
-                <textarea class="form-control" id="message" rows="4"></textarea>
+                <textarea class="form-control" id="javascript-message" rows="4"></textarea>
                 <label class="form-label" for="message">Type your message</label>
               </div>
               <button type="submit" class="btn btn-primary mt-3">Send</button>
@@ -49,19 +49,102 @@
     </div>
   </div>
 </section>
+
+<section id="html" style="background-color: #eee; display:none;">
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-8 col-lg-6 col-xl-4">
+        <div class="card" id="chat1" style="border-radius: 15px;">
+          <div class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+            <i class="fas fa-angle-left"></i>
+            <p class="mb-0 fw-bold">HTML/CSS</p>
+            <i class="fas fa-times"></i>
+          </div>
+          <div class="card-body chat-container">
+            <ul class="chat-messages" id="html-chat-messages">
+              {{#each messages}}
+              <li class="message">
+                <div class="d-flex flex-row justify-content-start mb-4">
+                  <img src="{{avatar}}" alt="avatar" style="width: 45px; height: 100%;">
+                  <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237, .2);">
+                    <p class="small mb-0">{{text}}</p>
+                  </div>
+                </div>
+              </li>
+              {{/each}}
+            </ul>
+            <form class="chat-form" id="html-chat-form">
+              <div class="form-outline">
+                <textarea class="form-control" id="html-message" rows="4"></textarea>
+                <label class="form-label" for="message">Type your message</label>
+              </div>
+              <button type="submit" class="btn btn-primary mt-3">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="chatGpt" style="background-color: #eee; display:none;">
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-8 col-lg-6 col-xl-4">
+        <div class="card" id="chat1" style="border-radius: 15px;">
+          <div class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+            <i class="fas fa-angle-left"></i>
+            <p class="mb-0 fw-bold">Chat GPT</p>
+            <i class="fas fa-times"></i>
+          </div>
+          <div class="card-body chat-container">
+            <ul class="chat-messages" id="chatGpt-chat-messages">
+              {{#each messages}}
+              <li class="message">
+                <div class="d-flex flex-row justify-content-start mb-4">
+                  <img src="{{avatar}}" alt="avatar" style="width: 45px; height: 100%;">
+                  <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237, .2);">
+                    <p class="small mb-0">{{text}}</p>
+                  </div>
+                </div>
+              </li>
+              {{/each}}
+            </ul>
+            <form class="chat-form" id="chatGpt-chat-form">
+              <div class="form-outline">
+                <textarea class="form-control" id="chatGpt-message" rows="4"></textarea>
+                <label class="form-label" for="message">Type your message</label>
+              </div>
+              <button type="submit" class="btn btn-primary mt-3">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io();
-  document.getElementById('chat-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const messageInput = document.getElementById('message');
-    const message = messageInput.value;
-    const avatar = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp";
-    socket.emit('chat message', { message, avatar });
-    messageInput.value = '';
-  });
+
+  function setupRoom( roomName ){
+    document.getElementById(roomName+'-chat-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const messageInput = document.getElementById(roomName+'-message');
+      const message = messageInput.value;
+      const avatar = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp";
+      socket.emit('chat message', { message, avatar, roomName });
+      messageInput.value = '';
+    });
+  }
+
+  setupRoom('javascript');
+  setupRoom('html');
+  setupRoom('chatGpt');
+
   socket.on('chat message', (data) => {
-    const chatMessages = document.getElementById('chat-messages');
+    const chatMessages = document.getElementById(data.roomName+'-chat-messages');
     const li = document.createElement('li');
     li.classList.add('message');
     const html = `
