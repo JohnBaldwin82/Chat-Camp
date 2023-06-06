@@ -2,14 +2,14 @@
 //if statement to check for email and password then sends post request to api
 const formHandlerLogin = async (e) => {
   // e.preventDefault();
-  const pwd = document.getElementById("loginPwd").value.trim();
+  const password = document.getElementById("loginPwd").value.trim();
   const email = document.getElementById("loginEmailId").value.trim();
   // const personName = document.getElementById('personName').value.trim();
   console.log("is it working?");
-  if (email && pwd) {
+  if (email && password) {
     const response = await fetch("/api/user/login", {
       method: "POST",
-      body: JSON.stringify({ email, pwd }),
+      body: JSON.stringify({ email: email, password: password}),
       headers: { "Content-Type": "application/json" },
     });
     if (response.ok) {
@@ -21,13 +21,14 @@ const formHandlerLogin = async (e) => {
 };
 const formHandlersignup = async (e) => {
   e.preventDefault();
-  const pwd = document.getElementById("loginPwd").value.trim();
+  const password = document.getElementById("loginPwd").value.trim();
   const email = document.getElementById("loginEmailId").value.trim();
   const userName = document.getElementById("user_Name").value.trim();
-  if (email && pwd && personName) {
+  if (email && password && userName) {
+    console.log(email,password,userName)
     const response = await fetch("/api/user", {
       method: "POST",
-      body: JSON.stringify({ email, pwd, userName }),
+      body: JSON.stringify({ email, password, userName }),
       headers: { "Content-Type": "application/json" },
     });
     if (response.ok) {

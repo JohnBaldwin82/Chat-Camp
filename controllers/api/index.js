@@ -6,7 +6,7 @@ const chatRoutes = require('./chatRoutes.js')
 
 router.use('/projects', postRoutes)
 router.use('/chatGpt', aiRoutes)
-router.use('/users', userRoutes);
+router.use('/user', userRoutes);
 router.use('/chat', chatRoutes);
 
 
