@@ -7,80 +7,72 @@
           <a href="#" class="card-link">Create a new</a> -->
     </div>
   </div>
-
   <select class="form-select" aria-label="Default select example" style="background-color: #eee;">
     <option selected>Select A Room</option>
     <option value="1">CHAT GTP</option>
     <option value="2">HTML/CSS</option>
     <option value="3">JAVASCRIPT</option>
   </select>
-
-  <section style="background-color: #eee;">
-    <div class="container py-5">
-
-      <div class="row d-flex justify-content-center">
-        <div class="col-md-8 col-lg-6 col-xl-4">
-
-          <div class="card" id="chat1" style="border-radius: 15px;">
-            <div
-              class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0"
-              style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
-              <i class="fas fa-angle-left"></i>
-              <p class="mb-0 fw-bold">JAVASCRIPT</p>
-              <i class="fas fa-times"></i>
-            </div>
-            <div class="card-body">
-
-              <div class="d-flex flex-row justify-content-start mb-4">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1"
-                  style="width: 45px; height: 100%;">
-                <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
-                  <p class="small mb-0">Static Conversation</p>
-                </div>
-              </div>
-
-              <div class="d-flex flex-row justify-content-end mb-4">
-                <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
-                  <p class="small mb-0">Cool.</p>
-                </div>
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava2-bg.webp" alt="avatar 1"
-                  style="width: 45px; height: 100%;">
-              </div>
-
-              <div class="d-flex flex-row justify-content-start mb-4">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1"
-                  style="width: 45px; height: 100%;">
-                <div class="ms-3" style="border-radius: 15px;">
-                 
-                  <div class="p-3 me-3 border" style="border-radius: 15px; background-color: #fbfbfb;">
-                    <p class="small mb-0">Cooler.</p>
-                  </div>
-                      
-                    <a href="#!">
-                      <div class="mask"></div>
-                    </a>
-                  
-                </div>
-              </div>
-
-              <div class="d-flex flex-row justify-content-start mb-4">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1"
-                  style="width: 45px; height: 100%;">
-                <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
-                  <p class="small mb-0">Not cool anymore</p>
-                </div>
-              </div>
-
-              <div class="form-outline">
-                <textarea class="form-control" id="textAreaExample" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Type your message</label>
-              </div>
-
-            </div>
+<section style="background-color: #eee;">
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-8 col-lg-6 col-xl-4">
+        <div class="card" id="chat1" style="border-radius: 15px;">
+          <div class="card-header d-flex justify-content-between align-items-center p-3 bg-info text-white border-bottom-0" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+            <i class="fas fa-angle-left"></i>
+            <p class="mb-0 fw-bold">JAVASCRIPT</p>
+            <i class="fas fa-times"></i>
           </div>
-
+          <div class="card-body chat-container">
+            <ul class="chat-messages" id="chat-messages">
+              {{#each messages}}
+              <li class="message">
+                <div class="d-flex flex-row justify-content-start mb-4">
+                  <img src="{{avatar}}" alt="avatar" style="width: 45px; height: 100%;">
+                  <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237, .2);">
+                    <p class="small mb-0">{{text}}</p>
+                  </div>
+                </div>
+              </li>
+              {{/each}}
+            </ul>
+            <form class="chat-form" id="chat-form">
+              <div class="form-outline">
+                <textarea class="form-control" id="message" rows="4"></textarea>
+                <label class="form-label" for="message">Type your message</label>
+              </div>
+              <button type="submit" class="btn btn-primary mt-3">Send</button>
+            </form>
+          </div>
         </div>
       </div>
-
     </div>
-  </section>
+  </div>
+</section>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  document.getElementById('chat-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const messageInput = document.getElementById('message');
+    const message = messageInput.value;
+    const avatar = "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp";
+    socket.emit('chat message', { message, avatar });
+    messageInput.value = '';
+  });
+  socket.on('chat message', (data) => {
+    const chatMessages = document.getElementById('chat-messages');
+    const li = document.createElement('li');
+    li.classList.add('message');
+    const html = `
+      <div class="d-flex flex-row justify-content-start mb-4">
+        <img src="${data.avatar}" alt="avatar" style="width: 45px; height: 100%;">
+        <div class="p-3 ms-3" style="border-radius: 15px; background-color: rgba(57, 192, 237, .2);">
+          <p class="small mb-0">${data.message}</p>
+        </div>
+      </div>
+    `;
+    li.innerHTML = html;
+    chatMessages.appendChild(li);
+  });
+</script>
