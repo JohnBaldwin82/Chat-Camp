@@ -6,6 +6,7 @@ const socketIo = require('socket.io')
 const routes = require('./controllers');
 const helpers = require('./utils/helpers');
 const exphbs = require('express-handlebars');
+const User = require('./models/User')
 const app = express();
 
 //skt added hdb.js in controllers
@@ -36,7 +37,7 @@ const hbs = exphbs.create({
 
  app.engine('handlebars', hbs.engine);
 
- const sess = {
+ const sessionMiddleware = session({
     secret: 'Super secret secret',
     cookie: {
         maxAge: 300000,
@@ -49,11 +50,11 @@ const hbs = exphbs.create({
     store: new SequelizeStore({
         db: sequelize
     })
-};
+});
 
 
 app.set('view engine', 'handlebars');
-app.use(session(sess));
+app.use(sessionMiddleware);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -66,18 +67,45 @@ app.use(require('./controllers/'));
 const server = http.createServer(app);
 const io = socketIo(server);
 
-io.on('connection', (socket) => {
-    console.log('A user has connected');
-    // console.log(socket);
+io.use((socket, next) => {
+    sessionMiddleware(socket.request, {}, next);
+  });
 
-    socket.on('chat message', (message) => {
-        console.log('Received message:', message);
-        io.emit('chat message', message);
-    });
+io.on("connection", (socket) => {
+  console.log("A user has connected");
+  console.log(socket.request.session.user_id);
 
-    socket.on('disconnect', () => {
-        console.log('You have been disconnected');
-    });
+  if (socket.request.session.user_id) {
+    User.findOne({
+      where: {
+        id: socket.request.session.user_id,
+      },
+    })
+      .then((user) => {
+        if (user) {
+          console.log("User found:", user.toJSON());
+          const username = user.toJSON().name;
+
+          socket.on("chat message", (message) => {
+            message.name = username;
+            console.log("Received message:", message);
+            io.emit("chat message", message);
+          });
+
+          socket.on("disconnect", () => {
+            console.log("You have been disconnected");
+          });
+        } else {
+          console.log("User not found.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error retrieving user:", err);
+      });
+  }
+  else{
+    socket.emit('loginRequest', {})
+  }
 });
 
 
