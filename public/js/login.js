@@ -1,5 +1,5 @@
-//form async preventDefault function that gets values from login
-//if statement to check for email and password then sends post request to api
+// form async preventDefault function that gets values from login
+// if statement to check for email and password then sends post request to api
 const formHandlerLogin = async (e) => {
   // e.preventDefault();
   const password = document.getElementById("loginPwd").value.trim();
@@ -19,6 +19,8 @@ const formHandlerLogin = async (e) => {
     }
   }
 };
+
+
 const formHandlersignup = async (e) => {
   e.preventDefault();
   const password = document.getElementById("loginPwd").value.trim();
@@ -40,4 +42,4 @@ const formHandlersignup = async (e) => {
 };
 
 document.querySelector("#signForm").addEventListener("click", formHandlerLogin);
-// document.querySelector('#signUp').addEventListener('submit', this.formHandlersignup);
+document.querySelector('#signUp').addEventListener('submit', formHandlersignup);
