@@ -4,7 +4,6 @@ const formHandlerLogin = async (e) => {
   // e.preventDefault();
   const password = document.getElementById("loginPwd").value.trim();
   const email = document.getElementById("loginEmailId").value.trim();
-  // const personName = document.getElementById('personName').value.trim();
   if (email && password) {
     const response = await fetch("/api/user/login", {
       method: "POST",
@@ -22,20 +21,24 @@ const formHandlerLogin = async (e) => {
 
 const formHandlersignup = async (e) => {
   e.preventDefault();
-  const password = document.getElementById("loginPwd").value.trim();
-  const email = document.getElementById("loginEmailId").value.trim();
+  const password = document.getElementById("signupPwd").value.trim();
+  const email = document.getElementById("signupEmailId").value.trim();
   const userName = document.getElementById("user_Name").value.trim();
   if (email && password && userName) {
-    console.log(email,password,userName)
     const response = await fetch("/api/user", {
       method: "POST",
-      body: JSON.stringify({ email: email, password: password, userName: userName }),
+      body: JSON.stringify({ email: email, password: password, name: userName }),
       headers: { "Content-Type": "application/json" },
     });
     if (response.ok) {
       document.location.replace("/profile");
     } else {
-      alert(response.statusText);
+      response.json().then(function(errors){
+          let errorMessages = [];
+          errors.errors.forEach(error => errorMessages.push(error.message));
+
+          document.getElementById('signup-errors').innerHTML = errorMessages.join('<br>')
+      });
     }
   }
 };

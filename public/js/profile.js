@@ -38,3 +38,13 @@ function chatGptPost(){
 
         document.getElementById('chatGptEntry').value = ''
 }
+
+function roomChange(){
+
+  document.getElementById('chatGpt').style.display = 'none';
+  document.getElementById('javascript').style.display = 'none';
+  document.getElementById('html').style.display = 'none';
+
+  document.getElementById(document.getElementById('roomSelect').value).style.display = 'block';
+
+}
