@@ -9,7 +9,7 @@ const exphbs = require('express-handlebars');
 const app = express();
 
 //skt added hdb.js in controllers
-const handlejs = require('./controllers/controlhbs');
+// const handlejs = require('./controllers/controlhbs');
 
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
@@ -18,18 +18,18 @@ const PORT = process.env.PORT || 3001;
 
 //skt added path to join hbs files and add helpers object
 const hbs = exphbs.create({
-
-    defaultLayout: 'main',
-    layoutsDir: path.join(__dirname, 'views/layouts'),
-    partialsDir: path.join(__dirname, 'views'),
+    helpers
+    // defaultLayout: 'main',
+    // layoutsDir: path.join(__dirname, 'views/layouts'),
+    // partialsDir: path.join(__dirname, 'views'),
     
     
-    helpers: {
-       userName: function(value){
-    return value;
+    // helpers: {
+    //    userName: function(value){
+    // return value;
 
-       }
-    }
+    //    }
+    // }
  });
 
 //  hbs.registerPartials(__dirname + '/views/partials/');
@@ -52,15 +52,15 @@ const hbs = exphbs.create({
 };
 
 
-app.set('view engine', hbs.engine);
+app.set('view engine', 'handlebars');
 app.use(session(sess));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 //express.urlencoded() function parses requests and returns an object
 // can also use inflate, limit, verify 
-app.use(express.urlencoded({ extended: true }));
-app.use('routes', routes);
+app.use(require('./controllers/'));
 
 
 const server = http.createServer(app);
