@@ -96,7 +96,7 @@ io.on("connection", (socket) => {
                 getChatGPTResponse(message.message).then(function(aiResponse){
                     io.emit("chat message", {
                         message: aiResponse,
-                        avatar: 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp',
+                        avatar: '/images/ai.png',
                         roomName: 'chatGpt',
                         name: 'Chat GPT'
                     });
