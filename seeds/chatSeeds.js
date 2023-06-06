@@ -9,7 +9,7 @@ const chatData = [
     {
         chat_text: 'Only if coding was easy as watching tv.',
         post_id: 3,
-        user_id: 4
+        user_id: 3
     },
     {
         chat_text: 'I know its tough but keep grinding!',
