@@ -6,7 +6,8 @@ const socketIo = require('socket.io')
 const routes = require('./controllers');
 const helpers = require('./utils/helpers');
 const exphbs = require('express-handlebars');
-const User = require('./models/User')
+const User = require('./models/User');
+const { Configuration, OpenAIApi } = require("openai");
 const app = express();
 
 //skt added hdb.js in controllers
@@ -90,6 +91,17 @@ io.on("connection", (socket) => {
             message.name = username;
             console.log("Received message:", message);
             io.emit("chat message", message);
+
+            if(message.roomName === 'chatGpt'){
+                getChatGPTResponse(message.message).then(function(aiResponse){
+                    io.emit("chat message", {
+                        message: aiResponse,
+                        avatar: 'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp',
+                        roomName: 'chatGpt',
+                        name: 'Chat GPT'
+                    });
+                });
+            }
           });
 
           socket.on("disconnect", () => {
@@ -113,3 +125,21 @@ sequelize.sync({ force: false }).then(() => {
     server.listen(PORT, () => console.log(`Now listening on ${PORT}`));
 });
 
+async function getChatGPTResponse (message) {
+  const openai = new OpenAIApi(
+    new Configuration({
+      apiKey: process.env.API_KEY.split('0000000').join(''),
+    })
+  );
+
+  try{
+    const completion = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: message,
+      });
+      return completion.data.choices[0].text;
+  }
+  catch(e){
+    return 'You are not allowed to talk to Chat GPT (bad api key)';
+  }
+}
